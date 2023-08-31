@@ -114,7 +114,33 @@ class Vehiculos(db.Model):
             "pilots": self.pilots,
         }
 
-# class Favorito(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey(user_id))
-#     user = relationship(User)
+class Favorito(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+   
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
+    user = db.relationship(User)  
+
+    personajes_id = db.Column(db.Integer, db.ForeignKey('personajes.id')) 
+    personajes = db.relationship(Personajes) 
+
+    vehiculos_id = db.Column(db.Integer, db.ForeignKey('vehiculos.id')) 
+    vehiculos = db.relationship(Vehiculos)  
+
+    planetas_id = db.Column(db.Integer, db.ForeignKey('planetas.id')) 
+    planetas = db.relationship(Planetas)  
+
+    def __repr__(self):
+        return '<Favorito %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "usuario_id": self.usuario_id,
+            "usuario" : self.usuario,
+            "personajes_id": self.personajes_id,
+            "personajes" : self.personajes,
+            "vehiculos_id": self.vehiculos_id,
+            "vehiculos" : self.vehiculos,
+            "planetas_id": self.planetas_id,
+            "planetas" : self.planetas,
+        }
