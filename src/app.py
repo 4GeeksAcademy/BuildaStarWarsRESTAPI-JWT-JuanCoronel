@@ -49,7 +49,17 @@ def handle_hello():
 
     return jsonify(user_list), 200  # Devuelve la lista de usuarios  
 
+#usario favorito
 
+@app.route('/users/favorito', methods=['GET'])
+def handle_favorito():
+    allfavorito = Favorito.query.all()
+    favoritoList = list(map(lambda p: p.serialize(), allfavorito))
+
+    if favoritoList == []:
+        return { 'msj': 'no hay favoritos' }, 404
+
+    return { 'msj': 'no hay favoritos' }, 200
 
 """--------------------------_<Personajes>_--------------------------------"""
 
@@ -135,6 +145,7 @@ def handle_vehiculo_id(vehiculo_id):
 
 
 """--------------------------_<favoritos>_--------------------------------"""
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':

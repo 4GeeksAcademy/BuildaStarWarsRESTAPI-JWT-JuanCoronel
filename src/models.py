@@ -1,4 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, ForeignKey, Integer
 
 db = SQLAlchemy()
 
@@ -7,9 +9,10 @@ class User(db.Model):
     name = db.Column(db.String(120), unique=True, nullable=False)
     last_name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=True, nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.id
 
     def serialize(self):
         return {
@@ -17,6 +20,7 @@ class User(db.Model):
             "name": self.name,
             "last_name": self.last_name,
             "email": self.email,
+            "password": self.password
             # do not serialize the password, its a security breach
         }
 
@@ -135,8 +139,8 @@ class Favorito(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "usuario_id": self.usuario_id,
-            "usuario" : self.usuario,
+            "usuario_id": self.user_id,
+            "usuario" : self.user,
             "personajes_id": self.personajes_id,
             "personajes" : self.personajes,
             "vehiculos_id": self.vehiculos_id,
