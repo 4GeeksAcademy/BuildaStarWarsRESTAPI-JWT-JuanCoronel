@@ -1,3 +1,4 @@
+# Importa la clase SQLAlchemy desde la extensión flask_sqlalchemy para interactuar con la base de datos
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, ForeignKey, Integer
@@ -10,7 +11,7 @@ class User(db.Model):
     last_name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=True, nullable=False)
-
+    usuario_favorito = relationship('Favorito', backref='user', lazy=True)
     def __repr__(self):
         return '<User %r>' % self.id
 
@@ -20,7 +21,8 @@ class User(db.Model):
             "name": self.name,
             "last_name": self.last_name,
             "email": self.email,
-            "password": self.password
+            "password": self.password,
+            "usuario_favorito": list(map(lambda item: item.serialize),self.usuario_favorito)
             # do not serialize the password, its a security breach
         }
 
@@ -122,7 +124,6 @@ class Favorito(db.Model):
     id = db.Column(db.Integer, primary_key=True)
    
     user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
-    user = db.relationship(User)  
 
     personajes_id = db.Column(db.Integer, db.ForeignKey('personajes.id')) 
     personajes = db.relationship(Personajes) 
@@ -140,11 +141,11 @@ class Favorito(db.Model):
         return {
             "id": self.id,
             "usuario_id": self.user_id,
-            "usuario" : self.user,
-            "personajes_id": self.personajes_id,
-            "personajes" : self.personajes,
-            "vehiculos_id": self.vehiculos_id,
-            "vehiculos" : self.vehiculos,
-            "planetas_id": self.planetas_id,
-            "planetas" : self.planetas,
+            # "usuario" : self.user,
+            "personajes_id": None if self.personajes is None else self.personajes.serialize(),
+            # "personajes" : self.personajes,
+            "vehiculos_id": None if self.vehiculos is None else self.vehiculos.serialize(),
+            # "vehiculos" : self.vehiculos,
+            "planetas_id": None if self.planetas is None else self.planetas.serialize(),
+            # "planetas" : self.planetas,
         }

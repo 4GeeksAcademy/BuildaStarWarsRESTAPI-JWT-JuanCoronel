@@ -49,17 +49,6 @@ def handle_hello():
 
     return jsonify(user_list), 200  # Devuelve la lista de usuarios  
 
-#usario favorito
-
-@app.route('/users/favorito', methods=['GET'])
-def handle_favorito():
-    allfavorito = Favorito.query.all()
-    favoritoList = list(map(lambda p: p.serialize(), allfavorito))
-
-    if favoritoList == []:
-        return { 'msj': 'no hay favoritos' }, 404
-
-    return { 'msj': 'no hay favoritos' }, 200
 
 """--------------------------_<Personajes>_--------------------------------"""
 
@@ -145,6 +134,36 @@ def handle_vehiculo_id(vehiculo_id):
 
 
 """--------------------------_<favoritos>_--------------------------------"""
+
+@app.route('/favorito', methods=['GET'])
+def handle_favs():
+
+    allfavorito = Favorito.query.all()
+    favoritoList = list(map(lambda p: p.serialize(),allfavorito))
+
+    if favoritoList == []:
+        return { 'msj' : 'no hay usuarios'}, 404
+
+    return favoritoList, 200
+
+
+@app.route('/<int:user_id>/favorito', methods=['GET'])
+def handle_favorito(user_id): 
+    allfavorito = Favorito.query.filter_by(user_id=user_id).all()
+    favoritoList = list(map(lambda p: p.serialize(), allfavorito))
+    
+
+    if favoritoList == []:
+        return { 'msj': 'no hay favoritos' }, 404
+
+    return jsonify({ 'msj': favoritoList }), 200
+
+
+@app.route ('/favorito/planetas/<int:planetas_id>', methods=['POST'])
+
+
+
+
 
 
 # this only runs if `$ python src/app.py` is executed
