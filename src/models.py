@@ -7,13 +7,30 @@ db = SQLAlchemy()
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(80), unique=False, nullable=False)
+    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+
+    def __repr__(self):
+        return '<User %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "email": self.email,
+            # do not serialize the password, its a securi
+        }
+
+
+class Usuario(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True, nullable=False)
     last_name = db.Column(db.String(120), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=True, nullable=False)
-    usuario_favorito = relationship('Favorito', backref='user', lazy=True)
+    usuario_favorito = relationship('Favorito', backref='usuario', lazy=True)
     def __repr__(self):
-        return '<User %r>' % self.id
+        return '<Usuario %r>' % self.id
 
     def serialize(self):
         return {
@@ -22,7 +39,7 @@ class User(db.Model):
             "last_name": self.last_name,
             "email": self.email,
             "password": self.password,
-            "usuario_favorito": list(map(lambda item: item.serialize),self.usuario_favorito)
+            "usuario_favorito": list(map(lambda item: item.serialize(),self.usuario_favorito))
             # do not serialize the password, its a security breach
         }
 
@@ -123,16 +140,16 @@ class Vehiculos(db.Model):
 class Favorito(db.Model):
     id = db.Column(db.Integer, primary_key=True)
    
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id')) 
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id')) 
 
     personajes_id = db.Column(db.Integer, db.ForeignKey('personajes.id')) 
-    personajes = db.relationship(Personajes) 
+    personajes = relationship(Personajes) 
 
     vehiculos_id = db.Column(db.Integer, db.ForeignKey('vehiculos.id')) 
-    vehiculos = db.relationship(Vehiculos)  
+    vehiculos = relationship(Vehiculos)  
 
-    planetas_id = db.Column(db.Integer, db.ForeignKey('planetas.id')) 
-    planetas = db.relationship(Planetas)  
+    planetas_id = Column(db.Integer, db.ForeignKey('planetas.id')) 
+    planetas = relationship(Planetas)  
 
     def __repr__(self):
         return '<Favorito %r>' % self.id
@@ -140,7 +157,7 @@ class Favorito(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "usuario_id": self.user_id,
+            "usuario_id": self.usuario_id,
             # "usuario" : self.user,
             "personajes_id": None if self.personajes is None else self.personajes.serialize(),
             # "personajes" : self.personajes,
