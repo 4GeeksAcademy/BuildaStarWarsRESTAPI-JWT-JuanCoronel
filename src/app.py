@@ -9,6 +9,7 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, Planetas, Vehiculos, Favorito, Personajes, Usuario
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 import json
 #from models import Person
 
@@ -25,6 +26,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 MIGRATE = Migrate(app, db)
 db.init_app(app)
 CORS(app)
+
+# Setup the Flask-JWT-Extended extension
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+jwt = JWTManager(app)
+
 setup_admin(app)
 
 # Handle/serialize errors like a JSON object
@@ -384,6 +390,66 @@ def delete_fav_vehiculo(usuario_id, vehiculos_id):
         return jsonify({"message": "VEHICULO QUE QUIERE ELIMINAR DE FAVORITOS NO EXISTE"}), 404
     
     return jsonify({"message": "El vehiculo ya está en favoritos"}), 404
+
+
+
+
+
+
+
+"""-----------------------------------------------_<SingUp>_-------------------------------------"""
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    request_body = json.loads(request.data)
+
+    existing_usuario = Usuario.query.filter_by(email=request_body["email"]).first()
+
+    if existing_usuario:
+        return jsonify({"msj": "Este usuario ya existe en nuestra base de datos"}), 404
+
+    new_usuario = Usuario(
+        nombre=request_body["nombre"],
+        apellido=request_body["apellido"],
+        email=request_body["email"],
+        password=request_body["password"]
+        )
+    db.session.add(new_usuario)
+    db.session.commit()
+    return jsonify(new_usuario.serialize()), 200
+
+
+
+
+"""-----------------------------------------------_<Login>_-------------------------------------"""
+
+@app.route("/login", methods=["POST"])
+def login():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    usuario_query = Usuario.query.filter_by(email=email).first()
+
+    if usuario_query is None:
+        return jsonify({"msj": "No hay ninguna cuenta vinculada a este mail"}), 404
+
+    elif email != usuario_query.serialize()['email'] or password != usuario_query.serialize()['password']:
+        return jsonify({"msj": "Contraseña muy incorrecta"}), 404
+
+    access_token = create_access_token(identity=email)
+    return jsonify(access_token=access_token)
+
+"""-----------------------------------------------_<Perfil>_-------------------------------------"""
+
+# Ruta protegida
+# Protect a route with jwt_required, which will kick out requests
+# without a valid JWT present.
+@app.route("/perfil", methods=["GET"])
+@jwt_required()
+def perfil():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    return jsonify(logged_in_as=current_user), 200
+
 
 
 
