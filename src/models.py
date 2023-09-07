@@ -12,7 +12,8 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.id
+        return f'<User { self.user}>'    
+        # return '<User %r>' % self.id
 
     def serialize(self):
         return {
@@ -30,7 +31,7 @@ class Usuario(db.Model):
     password = db.Column(db.String(120), unique=True, nullable=False)
     usuario_favorito = relationship('Favorito', backref='usuario', lazy=True)
     def __repr__(self):
-        return '<Usuario %r>' % self.id
+        return f'<Usuario { self.usuario}>'
 
     def serialize(self):
         return {
@@ -55,7 +56,7 @@ class Personajes(db.Model):
     height = db.Column(db.String(120), unique=True, nullable=False)
 
     def __repr__(self):
-        return '<Personajes %r>' % self.id
+        return f'<Personajes { self.personajes}>'
 
     def serialize(self):
         return {
@@ -84,7 +85,7 @@ class Planetas(db.Model):
     surface_water = db.Column(db.String(120), unique=True, nullable=False)
 
     def __repr__(self):
-        return '<Planetas %r>' % self.id
+        return f'<Planetas { self.planetas}>'
 
     def serialize(self):
         return {
@@ -117,7 +118,7 @@ class Vehiculos(db.Model):
     pilots = db.Column(db.String(120), unique=True, nullable=False)
 
     def __repr__(self):
-        return '<Vehiculos %r>' % self.id
+        return f'<Vehiculos { self.vehiculos}>'
 
     def serialize(self):
         return {
@@ -152,7 +153,7 @@ class Favorito(db.Model):
     planetas = relationship(Planetas)  
 
     def __repr__(self):
-        return '<Favorito %r>' % self.id
+        return f'<Favorito { self.Favorito}>'
 
     def serialize(self):
         return {

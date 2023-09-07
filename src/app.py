@@ -450,7 +450,12 @@ def perfil():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 
-
+@app.route("/valid-token", methods=["GET"])
+@jwt_required()
+def valid_token():
+    # Access the identity of the current user with get_jwt_identity
+    current_user = get_jwt_identity()
+    return jsonify({ 'is_logged' : True}), 200
 
 
 """-----------------------------------------------_<Usuario>_-------------------------------------"""
@@ -465,7 +470,6 @@ def handle_usuarios():
         return { 'msj' : 'no hay usuarios'}, 404
 
     return jsonify(usuariosList), 200
-
 
 @app.route('/<int:usuario_id>/favoritos', methods=['GET'])
 def handle_favoritos(usuario_id):
