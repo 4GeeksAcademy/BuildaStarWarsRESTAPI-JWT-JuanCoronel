@@ -408,15 +408,24 @@ def signup():
     if existing_usuario:
         return jsonify({"msj": "Este usuario ya existe en nuestra base de datos"}), 404
 
-    new_usuario = Usuario(
-        nombre=request_body["nombre"],
-        apellido=request_body["apellido"],
+    # new_usuario = Usuario(
+    #     nombre=request_body["nombre"],
+    #     apellido=request_body["apellido"],
+    #     email=request_body["email"],
+    #     password=request_body["password"]
+    #     )
+    
+    nuevo_usuario = Usuario (
+        name=request_body["name"],
+        last_name=request_body["last_name"],
         email=request_body["email"],
         password=request_body["password"]
-        )
-    db.session.add(new_usuario)
+    )
+    
+
+    db.session.add(nuevo_usuario)
     db.session.commit()
-    return jsonify(new_usuario.serialize()), 200
+    return jsonify(nuevo_usuario.serialize()), 200
 
 
 
